@@ -1,0 +1,32 @@
+{
+    "name": "boxedcode/laravel-url-tracking",
+    "description": "Url shortening & pixel tracking for Laravel.",
+    "keywords": ["laravel", "url", "shortening", "pixel", "tracking", "proxy", "track"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Oliver Green",
+            "email": "green2go@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "BoxedCode\\Tracking\\": "src/BoxedCode/Tracking/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "BoxedCode\\Tests\\Tracking\\": "tests/"
+        }
+    },
+    "require": {
+        "illuminate/database": "5.1.*|5.2.*",
+        "illuminate/support": "5.1.*|5.2.*",
+        "league/url": "^3.3"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.0",
+        "orchestra/testbench": "~3.0",
+        "mockery/mockery": "^0.9.4"
+    }
+}
