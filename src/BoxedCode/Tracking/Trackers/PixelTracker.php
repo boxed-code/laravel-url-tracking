@@ -14,6 +14,13 @@ class PixelTracker extends Tracker implements TrackerContract
 
     protected $route_key = 'p';
 
+    protected function getRoutingPath()
+    {
+        $path = parent::getRoutingPath();
+
+        return $path.'.gif';
+    }
+
     public function handle(Request $request, TrackableResourceModel $model)
     {
         $pixel = base64_decode(
@@ -33,7 +40,7 @@ class PixelTracker extends Tracker implements TrackerContract
 
         $length = count($path) - 1;
 
-        $path->offsetSet($length, $path[$length].'.gif');
+        $path->offsetSet($length, $path[$length]);
 
         return $url;
     }

@@ -75,16 +75,16 @@ abstract class Tracker
         return $this->route_key;
     }
 
-    protected function getRelativePath()
+    protected function getRoutingPath()
     {
         $path = str_finish($this->config->get('tracking.path'), '/');
 
-        return $path.$this->route_key;
+        return $path.$this->route_key.'/{id}';
     }
 
     public function registerRoute(Router $router)
     {
-        $path = $this->getRelativePath().'/{id}';
+        $path = $this->getRoutingPath();
 
         $router->get($path, ['as' => $this->route_name, function (Request $request, $id) {
             if (! ($model = TrackableResourceModel::find($id))) {
@@ -99,14 +99,14 @@ abstract class Tracker
 
     abstract public function handle(Request $request, TrackableResourceModel $model);
 
-    public function validateArguments(array $args)
+    public function getModelAttributes(array $args)
     {
-        return true;
-    }
+        $attrs = [
+            'id' => $this->getUniqueId(),
+            'type' => get_class($this),
+        ];
 
-    public function transformArguments(array $args)
-    {
-        return $args;
+        return array_merge($args, $attrs);
     }
 
     public function getTrackedUrl($parameters = [])
@@ -118,6 +118,20 @@ abstract class Tracker
         $url->getQuery()->modify($parameters);
 
         return $url;
+    }
+
+    /**
+     * Get a unique model id.
+     *
+     * @return string
+     */
+    protected function getUniqueId()
+    {
+        while (! isset($id) || TrackableResourceModel::find($id)) {
+            $id = str_random(6);
+        }
+
+        return $id;
     }
 
     public function __toString()

@@ -9,10 +9,23 @@ use Illuminate\Support\ServiceProvider;
 
 class TrackingServiceProvider extends ServiceProvider
 {
+    /**
+     * Register the service provider.
+     *
+     * @return void
+     */
     public function register()
     {
         $this->registerTrackers();
 
+        $this->registerFactory();
+    }
+
+    /**
+     * Register the factory.
+     */
+    protected function registerFactory()
+    {
         $this->app->singleton(TrackerFactory::class, function ($app) {
             $trackers = [
                 PixelTracker::class,
@@ -25,7 +38,10 @@ class TrackingServiceProvider extends ServiceProvider
         $this->app->alias(TrackerFactory::class, 'tracking');
     }
 
-    public function registerTrackers()
+    /**
+     * Register the trackers.
+     */
+    protected function registerTrackers()
     {
         $this->app->bind(PixelTracker::class, function ($app) {
             return new PixelTracker($app, $app['events'], $app['config']);
@@ -36,6 +52,11 @@ class TrackingServiceProvider extends ServiceProvider
         });
     }
 
+    /**
+     * Register the trackers routes and published package assets.
+     *
+     * @param \Illuminate\Routing\Router $router
+     */
     public function boot(Router $router)
     {
         $this->app[PixelTracker::class]->registerRoute($router);

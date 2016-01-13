@@ -2,34 +2,31 @@
 
 namespace BoxedCode\Tracking;
 
-/*
- * $tracker = new RedirectTracker('http://www.google.co.uk');
- * $url = $tracker->getTrackingUrl();
- *
- * $tracker = new PixelTracker();
- * $url = $tracker->getTrackingUrl();
- *
- * $link = Tracking::url('http://www.google.co.uk')->getTrackedUrl(['foo' => 'bar']);
- * $link = Tracking::pixel()->getTrackingUrl(['foo' => 'bar']);
- *
- * $tracking = app('uri.tracking');
- * $tracker = $tracking->url('http://www.google.co.uk');
- * $link = $tracking->url('http://www.google.co.uk')->getTrackedUrl(['foo' => 'bar']);
- * $tracker = $tracking->pixel();
- * $tracker = $tracking->trackerFromModel($model);
- * $tracking->destroy('ACKSROVMSKE34H45FG');
- *
- */
-
 use Illuminate\Contracts\Container\Container;
 use InvalidArgumentException;
 
 class TrackerFactory
 {
+    /**
+     * Container instance.
+     *
+     * @var \Illuminate\Contracts\Container\Container
+     */
     protected $container;
 
+    /**
+     * Tracker type array.
+     *
+     * @var array
+     */
     protected $trackers;
 
+    /**
+     * TrackerFactory constructor.
+     *
+     * @param \Illuminate\Contracts\Container\Container $container
+     * @param array $trackers
+     */
     public function __construct(Container $container, array $trackers)
     {
         $this->container = $container;
@@ -41,49 +38,69 @@ class TrackerFactory
         }
     }
 
-    public function destroy($resource)
+    /**
+     * Source a model from an argument.
+     *
+     * @param $arg
+     * @return mixed
+     */
+    protected function sourceModel($arg)
     {
-        if (is_string($resource)) {
-            $resource = TrackableResourceModel::find($resource);
+        if (is_string($arg)) {
+            $arg = TrackableResourceModel::findOrFail($arg);
         }
 
-        if (! $resource instanceof TrackableResourceModel) {
+        if (! $arg instanceof TrackableResourceModel) {
             throw new InvalidArgumentException(
                 "Invalid resource, must be string identifier or TrackableResourceModel. [$name]"
             );
         }
 
-        $resource->delete();
+        return $arg;
     }
 
-    public function resource($resource)
+    /**
+     * Destroy a tracker by id or model.
+     *
+     * @param string|\BoxedCode\Tracking\TrackableResourceModel $mixed
+     */
+    public function destroy($mixed)
     {
+        $model = $this->sourceModel($mixed);
+
+        $model->delete();
     }
 
-    protected function getUniqueId()
+    /**
+     * Get a tracker by id or model.
+     *
+     * @param $mixed
+     * @return string|\BoxedCode\Tracking\TrackableResourceModel $mixed
+     */
+    public function resource($mixed)
     {
-        while (! isset($token) || TrackableResourceModel::find($token)) {
-            $token = str_random(6);
-        }
+        $model = $this->sourceModel($mixed);
 
-        return $token;
+        $instance = $this->container->make($model->type);
+
+        $instance->setModel($model);
+
+        return $instance;
     }
 
+    /**
+     * Dynamically pass calls to tracker instances.
+     *
+     * @param $name
+     * @param array $arguments
+     * @return \BoxedCode\Tracking\Contracts\Tracker
+     */
     public function __call($name, $arguments = [])
     {
         if (array_key_exists($name, $this->trackers)) {
             $tracker = $this->container->make($this->trackers[$name]);
 
-            $tracker->validateArguments($arguments);
-
-            $attr = [
-                'id' => $this->getUniqueId(),
-                'type' => get_class($tracker),
-            ];
-
-            $attr = array_merge(
-                $tracker->transformArguments($arguments), $attr
-            );
+            $attr = $tracker->getModelAttributes($arguments);
 
             $tracker->setModel(TrackableResourceModel::create($attr));
 

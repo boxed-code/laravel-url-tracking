@@ -17,10 +17,14 @@ class RedirectTracker extends Tracker implements TrackerContract
 
     public function handle(Request $request, TrackableResourceModel $model)
     {
-        return redirect()->away($model->resource, $model->meta['status_code']);
+        $default_status = $this->config->get('tracking.redirect', 302);
+
+        $status_code = $model->meta['status_code'] ?: $default_status;
+
+        return redirect()->away($model->resource, $status_code);
     }
 
-    public function validateArguments(array $args)
+    public function getModelAttributes(array $args)
     {
         if (! isset($args[0]) || ! filter_var($args[0], FILTER_VALIDATE_URL)) {
             $url = isset($args[0]) ? (string) $args[0] : 'none';
@@ -33,15 +37,12 @@ class RedirectTracker extends Tracker implements TrackerContract
                 throw new InvalidArgumentException("Invalid status code. [$args[1]");
             }
         }
-    }
 
-    public function transformArguments(array $args)
-    {
-        return [
+        return parent::getModelAttributes([
             'resource' => $args[0],
             'meta' => [
-                'status_code' => isset($args[1]) ? $args[1] : 302,
+                'status_code' => isset($args[1]) ? $args[1] : null,
             ],
-        ];
+        ]);
     }
 }

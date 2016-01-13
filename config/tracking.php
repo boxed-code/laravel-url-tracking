@@ -16,4 +16,14 @@ return [
     */
     'path' => env('TRACKING_PATH', '/track'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Default Redirect Status Code
+    |--------------------------------------------------------------------------
+    |
+    | The defaults status code to use when issuing HTTP redirects. [30X]
+    |
+    */
+    'redirect' => 302,
+
 ];
