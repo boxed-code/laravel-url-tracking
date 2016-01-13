@@ -94,7 +94,7 @@ abstract class Tracker
             $this->events->fire('tracking.tracked', new TrackedEvent($model, $request));
 
             return $this->handle($request, $model);
-        }, ]);
+        }]);
     }
 
     abstract public function handle(Request $request, TrackableResourceModel $model);
