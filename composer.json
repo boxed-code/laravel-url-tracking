@@ -1,6 +1,6 @@
 {
-    "name": "boxedcode/laravel-url-tracking",
-    "description": "Url shortening & pixel tracking for Laravel.",
+    "name": "boxed-code/laravel-url-tracking",
+    "description": "An abstract url & pixel tracking package for Laravel.",
     "keywords": ["laravel", "url", "shortening", "pixel", "tracking", "proxy", "track"],
     "license": "MIT",
     "authors": [
