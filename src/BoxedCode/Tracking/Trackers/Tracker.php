@@ -219,7 +219,9 @@ abstract class Tracker
      */
     public function getTrackedUrl($parameters = [])
     {
-        $route_url = route($this->route_name, $this->model->getKey());
+        $resolver = $this->config->get('tracking.resolver', 'route');
+
+        $route_url = call_user_func_array($resolver, [$this->route_name, $this->model->getKey()]);
 
         $url = Url::createFromUrl($route_url);
 
