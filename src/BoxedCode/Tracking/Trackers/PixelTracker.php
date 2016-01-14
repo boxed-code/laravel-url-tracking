@@ -58,23 +58,4 @@ class PixelTracker extends Tracker implements TrackerContract
             ->header('Content-Type', 'image/gif')
             ->header('Cache-Control', 'must-revalidate, no-cache, no-store, private');
     }
-
-    /**
-     * Get a 'trackable' url for the current data model.
-     *
-     * @param array $parameters
-     * @return \League\Url\Url
-     */
-    public function getTrackedUrl($parameters = [])
-    {
-        $url = parent::getTrackedUrl($parameters);
-
-        $path = $url->getPath();
-
-        $length = count($path) - 1;
-
-        $path->offsetSet($length, $path[$length]);
-
-        return $url;
-    }
 }
