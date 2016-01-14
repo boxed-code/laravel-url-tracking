@@ -3,10 +3,10 @@
 namespace BoxedCode\Tests\Tracking;
 
 use BoxedCode\Tests\Tracking\Support\AbstractTestCase;
+use BoxedCode\Tests\Tracking\Support\StubTracker;
 use BoxedCode\Tracking\Contracts\Tracker;
-use BoxedCode\Tracking\TrackableResourceModel;
 use BoxedCode\Tracking\TrackerFactory;
-use BoxedCode\Tracking\Trackers\PixelTracker;
+use stdClass;
 
 class TrackingFactoryTest extends AbstractTestCase
 {
@@ -19,7 +19,7 @@ class TrackingFactoryTest extends AbstractTestCase
 
     public function testDestroyIdentifier()
     {
-        $m = $this->createPixelResource();
+        $m = $this->createStubResource();
 
         $f = $this->getFactory();
 
@@ -30,7 +30,7 @@ class TrackingFactoryTest extends AbstractTestCase
 
     public function testDestroyModel()
     {
-        $m = $this->createPixelResource();
+        $m = $this->createStubResource();
 
         $f = $this->getFactory();
 
@@ -41,7 +41,7 @@ class TrackingFactoryTest extends AbstractTestCase
 
     public function testResourceIdentifier()
     {
-        $m = $this->createPixelResource();
+        $m = $this->createStubResource();
 
         $f = $this->getFactory();
 
@@ -52,7 +52,7 @@ class TrackingFactoryTest extends AbstractTestCase
 
     public function testResourceModel()
     {
-        $m = $this->createPixelResource();
+        $m = $this->createStubResource();
 
         $f = $this->getFactory();
 
@@ -61,28 +61,25 @@ class TrackingFactoryTest extends AbstractTestCase
         $this->assertInstanceOf(Tracker::class, $t);
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testResourceModelInvalid()
+    {
+        $f = $this->getFactory();
+
+        $t = $f->resource(new stdClass);
+    }
+
     public function testCall()
     {
         $f = $this->getFactory();
 
-        $this->assertInstanceOf(Tracker::class, $f->pixel());
+        $this->assertInstanceOf(Tracker::class, $f->stub());
     }
 
     protected function getFactory()
     {
-        return new TrackerFactory($this->app, [PixelTracker::class]);
-    }
-
-    protected function createPixelResource($attrs = [])
-    {
-        $attrs = array_merge(
-            [
-                'id' => str_random(7),
-                'type' => PixelTracker::class,
-            ],
-            $attrs
-        );
-
-        return TrackableResourceModel::create($attrs);
+        return new TrackerFactory($this->app, [StubTracker::class]);
     }
 }

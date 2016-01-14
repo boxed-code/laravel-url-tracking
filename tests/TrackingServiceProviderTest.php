@@ -3,9 +3,8 @@
 namespace BoxedCode\Tests\Tracking;
 
 use BoxedCode\Tests\Tracking\Support\AbstractTestCase;
-use BoxedCode\Tracking\TrackableResourceModel;
+use BoxedCode\Tests\Tracking\Support\StubTracker;
 use BoxedCode\Tracking\TrackerFactory;
-use BoxedCode\Tracking\Trackers\PixelTracker;
 use BoxedCode\Tracking\Trackers\RedirectTracker;
 use BoxedCode\Tracking\TrackingServiceProvider;
 
@@ -21,14 +20,14 @@ class TrackingServiceProviderTest extends AbstractTestCase
     public function testPixelTrackerInjectable()
     {
         $this->assertInstanceOf(
-            PixelTracker::class,
-            $this->app->make(PixelTracker::class)
+            StubTracker::class,
+            $this->app->make(StubTracker::class)
         );
     }
 
     public function testPixelTrackerRoute()
     {
-        $t = $this->app->make(PixelTracker::class);
+        $t = $this->app->make(StubTracker::class);
 
         $t->setModel($this->createTrackableResource());
 
@@ -61,18 +60,5 @@ class TrackingServiceProviderTest extends AbstractTestCase
         $publishes = TrackingServiceProvider::pathsToPublish();
 
         $this->assertCount(2, $publishes);
-    }
-
-    protected function createTrackableResource($attrs = [])
-    {
-        $attrs = array_merge(
-            [
-                'id' => 12345,
-                'type' => 'test',
-            ],
-            $attrs
-        );
-
-        return TrackableResourceModel::create($attrs);
     }
 }
