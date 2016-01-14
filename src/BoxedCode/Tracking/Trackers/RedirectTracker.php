@@ -9,12 +9,34 @@ use InvalidArgumentException;
 
 class RedirectTracker extends Tracker implements TrackerContract
 {
+    /**
+     * The trackers type handle.
+     *
+     * @var string
+     */
     protected $handle = 'url';
 
+    /**
+     * The trackers route name.
+     *
+     * @var string
+     */
     protected $route_name = 'tracking.redirect';
 
-    protected $route_key = 'r';
+    /**
+     * The trackers route parameter.
+     *
+     * @var string
+     */
+    protected $route_parameter = 'r';
 
+    /**
+     * Handle the tracking request.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param \BoxedCode\Tracking\TrackableResourceModel $model
+     * @return mixed
+     */
     public function handle(Request $request, TrackableResourceModel $model)
     {
         $default_status = $this->config->get('tracking.redirect', 302);
@@ -24,6 +46,12 @@ class RedirectTracker extends Tracker implements TrackerContract
         return redirect()->away($model->resource, $status_code);
     }
 
+    /**
+     * Generate a model attribute array from an argument array.
+     *
+     * @param array $args
+     * @return array
+     */
     public function getModelAttributes(array $args)
     {
         if (! isset($args[0]) || ! filter_var($args[0], FILTER_VALIDATE_URL)) {
@@ -32,10 +60,8 @@ class RedirectTracker extends Tracker implements TrackerContract
             throw new InvalidArgumentException("Invalid url provided. [$url]");
         }
 
-        if (isset($args[1])) {
-            if (! is_int($args[1])) {
-                throw new InvalidArgumentException("Invalid status code. [$args[1]");
-            }
+        if (isset($args[1]) && ! is_int($args[1])) {
+            throw new InvalidArgumentException("Invalid status code. [$args[1]]");
         }
 
         return parent::getModelAttributes([

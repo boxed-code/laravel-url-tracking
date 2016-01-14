@@ -51,6 +51,8 @@ class TrackerFactory
         }
 
         if (! $arg instanceof TrackableResourceModel) {
+            $name = ('object' === gettype($arg)) ? get_class($arg) : 'object';
+
             throw new InvalidArgumentException(
                 "Invalid resource, must be string identifier or TrackableResourceModel. [$name]"
             );
