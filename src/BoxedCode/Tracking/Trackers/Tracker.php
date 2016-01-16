@@ -229,8 +229,10 @@ abstract class Tracker
             $params = "?";
 
             foreach ($parameters as $key => $value) {
-                $params .= "$key=$value";
+                $params .= "$key=$value&";
             }
+
+            $params = substr($params, 0, -1);
         }
 
         return $url . $params;

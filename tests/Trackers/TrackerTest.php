@@ -118,9 +118,9 @@ class TrackerTest extends AbstractTestCase
     {
         $t = $this->createStubTracker();
 
-        $url = $t->getTrackedUrl(['foo' => 'bar']);
+        $url = $t->getTrackedUrl(['foo' => 'bar', 'baz' => 'qux']);
 
-        $this->assertStringEndsWith('foo=bar', (string) $url);
+        $this->assertStringEndsWith('foo=bar&baz=qux', (string) $url);
     }
 
     public function testToString()
