@@ -109,8 +109,6 @@ class TrackerTest extends AbstractTestCase
     {
         $t = $this->createStubTracker();
 
-        $this->assertInstanceOf(Url::class, $t->getTrackedUrl());
-
         $url = route($t->getRouteName(), $t->getModel()->getKey());
 
         $this->assertSame($url, (string) $t->getTrackedUrl());
@@ -121,8 +119,6 @@ class TrackerTest extends AbstractTestCase
         $t = $this->createStubTracker();
 
         $url = $t->getTrackedUrl(['foo' => 'bar']);
-
-        $this->assertInstanceOf(Url::class, $url);
 
         $this->assertStringEndsWith('foo=bar', (string) $url);
     }

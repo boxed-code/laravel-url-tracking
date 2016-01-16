@@ -3,8 +3,8 @@
 namespace BoxedCode\Tests\Tracking;
 
 use BoxedCode\Tests\Tracking\Support\AbstractTestCase;
-use BoxedCode\Tests\Tracking\Support\StubTracker;
 use BoxedCode\Tracking\TrackerFactory;
+use BoxedCode\Tracking\Trackers\PixelTracker;
 use BoxedCode\Tracking\Trackers\RedirectTracker;
 use BoxedCode\Tracking\TrackingServiceProvider;
 
@@ -20,20 +20,22 @@ class TrackingServiceProviderTest extends AbstractTestCase
     public function testPixelTrackerInjectable()
     {
         $this->assertInstanceOf(
-            StubTracker::class,
-            $this->app->make(StubTracker::class)
+            PixelTracker::class,
+            $this->app->make(PixelTracker::class)
         );
     }
 
     public function testPixelTrackerRoute()
     {
-        $t = $this->app->make(StubTracker::class);
+        $t = $this->app->make(PixelTracker::class);
 
         $t->setModel($this->createTrackableResource());
 
-        $response = $this->call('GET', $t->getTrackedUrl()->getPath());
+        $response = $this->call('GET', $t->getTrackedUrl());
 
         $this->assertEquals(200, $response->status());
+
+        $this->assertEquals('image/gif', $response->headers->get('Content-Type'));
     }
 
     public function testRedirectTrackerInjectable()
@@ -50,7 +52,7 @@ class TrackingServiceProviderTest extends AbstractTestCase
 
         $t->setModel($this->createTrackableResource(['resource' => 'http://www.google.co.uk']));
 
-        $response = $this->call('GET', $t->getTrackedUrl()->getPath());
+        $response = $this->call('GET', $t->getTrackedUrl());
 
         $this->assertEquals(302, $response->status());
     }

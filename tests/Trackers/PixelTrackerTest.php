@@ -29,8 +29,6 @@ class PixelTrackerTest extends AbstractTestCase
     {
         $t = $this->createPixelTracker();
 
-        $this->assertInstanceOf(Url::class, $t->getTrackedUrl());
-
         $url = route($t->getRouteName(), $t->getModel()->getKey());
 
         $this->assertSame($url, (string) $t->getTrackedUrl());
@@ -43,8 +41,6 @@ class PixelTrackerTest extends AbstractTestCase
         $t = $this->createPixelTracker();
 
         $url = $t->getTrackedUrl(['foo' => 'bar']);
-
-        $this->assertInstanceOf(Url::class, $url);
 
         $this->assertStringEndsWith('foo=bar', (string) $url);
     }

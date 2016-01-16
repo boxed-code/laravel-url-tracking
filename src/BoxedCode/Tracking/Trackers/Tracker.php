@@ -221,13 +221,19 @@ abstract class Tracker
     {
         $resolver = $this->config->get('tracking.resolver', 'route');
 
-        $route_url = call_user_func_array($resolver, [$this->route_name, $this->model->getKey()]);
+        $url = call_user_func_array($resolver, [$this->route_name, $this->model->getKey()]);
 
-        $url = Url::createFromUrl($route_url);
+        $params = '';
 
-        $url->getQuery()->modify($parameters);
+        if (count($parameters) > 0) {
+            $params = "?";
 
-        return $url;
+            foreach ($parameters as $key => $value) {
+                $params .= "$key=$value";
+            }
+        }
+
+        return $url . $params;
     }
 
     /**
