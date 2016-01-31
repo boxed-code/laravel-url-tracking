@@ -180,7 +180,7 @@ abstract class Tracker
                 abort(404);
             }
 
-            if (0 === count($this->events->fire('tracking.tracked', new TrackedEvent($model, $request)))) {
+            if (false === $this->events->fire('tracking.tracked', new TrackedEvent($model, $request))) {
                 abort(404);
             } else {
                 return $this->handle($request, $model);
